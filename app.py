@@ -1,24 +1,58 @@
 import tkinter as tk
+import tkinter.messagebox
 
-def convert_distance():
-    miles = float(e1_value.get()) * 0.621371
-    t1.delete("1.0", tk.END)
-    t1.insert(tk.END, str(miles))
 
-window = tk.Tk()
-window.title("Kilometer to Mile Converter")
+class DistanceConverter:
+    def __init__(self, root):
+        self.root = root
+        root.title("Distance Converter")
 
-l1 = tk.Label(text="Enter Kilometers:")
-l1.grid(row=0, column=0)
+        self.root.geometry("400x100")
 
-e1_value = tk.StringVar()
-e1 = tk.Entry(textvariable=e1_value)
-e1.grid(row=0, column=1)
+        self.label1 = tk.Label(text="Kilometers:")
+        self.label1.grid(row=0, column=0)
 
-b1 = tk.Button(text="Convert", command=convert_distance)
-b1.grid(row=0, column=2)
+        self.e1_value = tk.StringVar()
+        self.entry1 = tk.Entry(textvariable=self.e1_value)
+        self.entry1.grid(row=0, column=1)
 
-t1 = tk.Text(height=1, width=20)
-t1.grid(row=1, column=1)
+        self.label2 = tk.Label(text="Miles:")
+        self.label2.grid(row=0, column=2)
 
-window.mainloop()
+        self.e2_value = tk.StringVar()
+        self.entry2 = tk.Entry(textvariable=self.e2_value)
+        self.entry2.grid(row=0, column=3)
+        self.entry2.bind("<Return>", self.convert_distance)
+
+        self.e1_value.trace("w", self.convert_kilometers_to_miles)
+        self.e2_value.trace("w", self.convert_miles_to_kilometers)
+
+    def convert_miles_to_kilometers(self, *args):
+        try:
+            miles = float(self.e2_value.get())
+            kilometers = miles * 1.60934
+            self.e1_value.set(kilometers)
+        except ValueError:
+            self.e1_value.set("")
+
+    def convert_kilometers_to_miles(self, *args):
+        try:
+            kilometers = float(self.e1_value.get())
+            miles = kilometers / 1.60934
+            self.e2_value.set(miles)
+        except ValueError:
+            self.e2_value.set("")
+
+    def convert_distance(self, *args):
+        pass
+
+    def quit_app(self, event=None):
+        result = tkinter.messagebox.askyesno("Quit", "Are you sure you want to quit?")
+        if result:
+            self.root.destroy()
+
+
+root = tk.Tk()
+app = DistanceConverter(root)
+root.bind("<Escape>", app.quit_app)
+root.mainloop()
